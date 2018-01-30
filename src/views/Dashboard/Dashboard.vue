@@ -7,16 +7,33 @@
         <div class="sub">Nansha Public Information Resources Service Platform</div>
       </div>
       <nav id="help">
-        <div id="search">
-          <img src="/static/icon/search.png">
-        </div>
-        <div id="message">
+        <div id="message" class="nav">
           <img src="/static/icon/tones.png">
         </div>
-        <div id="config">
+        <div class="message-list-container">
+          <ul class="message-list">
+            <li class="message-list-item"></li>
+            <li class="message-list-item">22222222</li>
+            <li class="message-list-item">333333333</li>
+            <li class="message-list-item">444444444K</li>
+            <li class="message-list-item">55555555555</li>
+          </ul>
+        </div>
+        <div id="config" class="nav">
           <img src="/static/icon/user.png">
         </div>
+        <div class="config-list-container" @click="activeList" :class="[{active:isActiveList()}]">
+          <ul class="config-list">
+            <li class="config-list-item"></li>
+            <li class="config-list-item">退出登录</li>
+          </ul>
+        </div>
       </nav>
+         
+      <div id="search">
+        <img class="search" src="/static/icon/search_.png"/>
+        <input type="text" placeholder="搜索">
+      </div>
     </header>
     <nav id="navs" :class="[{active: isMenuActive()}]">
       <div class="menu-tabs">
@@ -48,6 +65,12 @@ export default {
     }
   },
   methods: {
+    activeList: function() {
+      dashboardStore.commit('activeList')
+    },
+    isActiveList: function() {
+      return dashboardStore.state.isActiveList
+    },
     activeMenu: function() {
       dashboardStore.commit('activeMenu')
     },
@@ -81,7 +104,14 @@ $header-height: 60px;
 $sidebar-width: 250px;
 $sidebar-toggle-width: 25px;
 $sidebar-menu-item-height: 40px;
+$search-bar-height:40px;
+$color-search-font:#B9BEC9;
+$color-nav-style: rgb(7,8,9);
 
+*{
+  padding: 0px;
+  margin: 0px;
+}
 header#header {
   position: fixed;
   top: 0;
@@ -135,13 +165,15 @@ header#header {
     float: right;
     font-size: 0;
 
-    &>div {
+    &>div.nav{
       border-left: solid 1px darken($color-steel, 5%);
       position: relative;
       overflow: hidden;
       width: $header-height;
       height: $header-height;
       display: inline-block;
+      cursor: pointer;
+
       &>img {
         filter: drop-shadow($color-steel-font 100px 0);
         position: absolute;
@@ -150,8 +182,163 @@ header#header {
         width: 32px;
         height: 32px;
       }
+
+      &:hover{
+        background-color: $color-grass;
+
+        &>img{
+            filter: drop-shadow(white 100px 0);
+        }
+      }
+
+      &:active{
+        background-color: darken($color-grass,10%);
+      }
     }
+
+    &>div.message-list-container{
+        position: fixed;
+        top: 61px;
+        right: 60px;
+
+      &>ul.message-list{
+        width: 150px;
+        list-style: none;
+        font-size: 14px;
+
+        &:hover{
+          &>li.message-list-item:first-child{
+              border-bottom:10px solid $color-grass;
+          }
+        }
+
+        &>li.message-list-item{
+          height: 35px;
+          line-height: 35px;
+          width: 100%;
+          text-align: center;
+          color: $color-nav-style;
+          background-color: $color-f;
+          cursor: pointer;
+
+           &:first-child{
+            width:0px;  
+            height:0px;  
+            border-left:10px solid $color-nav-style;  
+            border-right:10px solid $color-nav-style;  
+            border-bottom:10px solid $color-f;
+            margin-left: 110px;
+          }
+
+          &:hover{
+            background-color: $color-grass;
+            color: $color-f;
+          }
+
+          &:active{
+            background-color: darken($color-grass,10%);
+          }
+
+        }
+      }
+     
+    }
+
+    &>div.config-list-container{
+      position: fixed;
+      top: 61px;
+      right: 0px;
+      visibility: hidden;
+
+      &.active{
+        visibility: visible;
+      }
+
+      &>ul.config-list{
+        list-style: none;
+        font-size: 14px;
+        width: 120px;
+
+        &:hover{
+          &>li.config-list-item:first-child{
+               border-bottom:10px solid $color-grass;
+          }
+        }
+
+        &>li.config-list-item{
+          height: 35px;
+          line-height: 35px;
+          width: 100%;
+          text-align: center;
+          color: $color-nav-style;
+          background-color: $color-f;
+          cursor: pointer;
+
+          &:first-child{
+            width:0px;  
+            height:0px;  
+            border-left:10px solid $color-nav-style;  
+            border-right:10px solid $color-nav-style;  
+            border-bottom:10px solid $color-f;
+            margin-left: 80px;
+          }
+
+          &:hover{
+            background-color: $color-grass;
+            color: $color-f;
+          }
+
+          &:active{
+            background-color: darken($color-grass,10%);
+          }
+        }
+      }
+
+    }
+    
+
   }
+ 
+  &>div#search{
+    float: right;
+    width: 180px;
+    height: $search-bar-height;
+    margin-top: ($header-height - $search-bar-height) / 2;
+    margin-right: 10px;
+    box-shadow:0px 0px 999px $color-nav-style inset;
+    transition: all 500ms ease;
+
+    &:hover{
+      width: 300px;
+      border-bottom: 1px solid $color-grass;
+
+      &>input{
+         width: 260px;
+      }
+    }
+        
+    &>input{
+      display: inline-block;
+      width: 140px;
+      height: $search-bar-height;
+      line-height: $search-bar-height;
+      margin-left: $search-bar-height;
+      outline: none;
+      color:$color-search-font;
+      font-size: 16px;
+      border: 0px solid $color-nav-style;
+      background: $color-nav-style;
+      transition: all 500ms ease;
+    }
+
+    &>img.search{
+      position: absolute;
+      height: 20px;
+      width: 20px;
+      margin: ($search-bar-height - 20px) / 2;
+    }
+
+  }  
 }
 nav#navs {
   position: fixed;
@@ -265,4 +452,5 @@ div#content {
   right: 0;
   bottom: 0;
 }
+
 </style>

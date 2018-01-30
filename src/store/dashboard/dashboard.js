@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 const state = {
+  isListActive: false,
   isMenuActive: false,
   activeMenuTabId: 'menu1',
   activeMenuItemId: 'menu11',
@@ -278,6 +279,9 @@ const state = {
 }
 
 const mutations = {
+  activeList: function(state) {
+    state.isListActive = !state.isListActive
+  },
   activeMenu: function(state) {
     state.isMenuActive = !state.isMenuActive
   },
