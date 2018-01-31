@@ -7,25 +7,32 @@
         <div class="sub">Nansha Public Information Resources Service Platform</div>
       </div>
       <nav id="help">
-        <div id="message" class="nav">
+        <div id="message" class="nav" @click="activeMessage">
           <img src="/static/icon/tones.png">
         </div>
-        <div class="message-list-container">
+        <div class="message-list-container" :class="[{active:isMessageActive()}]">
           <ul class="message-list">
             <li class="message-list-item"></li>
-            <li class="message-list-item">22222222</li>
-            <li class="message-list-item">333333333</li>
+            <li class="message-list-item">
+              <span class="message-name">未读消息</span>
+              <span class="message-number">2,234</span>
+              <span class="message-tip"></span>
+            </li>
+            <li class="message-list-item">
+              <span class="message-name">已读消息</span>
+              <span class="message-number">1,234</span>
+            </li>
             <li class="message-list-item">444444444K</li>
-            <li class="message-list-item">55555555555</li>
           </ul>
         </div>
-        <div id="config" class="nav">
+        <div id="config" class="nav" @click="activeConfig">
           <img src="/static/icon/user.png">
         </div>
-        <div class="config-list-container" @click="activeList" :class="[{active:isActiveList()}]">
+        <div class="config-list-container" :class="[{active:isConfigActive()}]">
           <ul class="config-list">
             <li class="config-list-item"></li>
-            <li class="config-list-item">退出登录</li>
+            <li class="config-list-item">个人信息</li>
+            <li class="config-list-item" @click="logout">退出登录</li>
           </ul>
         </div>
       </nav>
@@ -65,11 +72,27 @@ export default {
     }
   },
   methods: {
-    activeList: function() {
-      dashboardStore.commit('activeList')
+    // recover: function () {
+    //   document.onclick=function () {
+    //     activeConfig();
+    //   }
+    // },
+    logout: function() {
+      console.log(sessionStorage.getItem('token'))
+      sessionStorage.clear()
+      window.location.reload()
     },
-    isActiveList: function() {
-      return dashboardStore.state.isActiveList
+    activeConfig: function() {
+      dashboardStore.commit('activeConfig')
+    },
+    isConfigActive: function() {
+      return dashboardStore.state.isConfigActive
+    },
+    activeMessage: function() {
+      dashboardStore.commit('activeMessage')
+    },
+    isMessageActive: function() {
+      return dashboardStore.state.isMessageActive
     },
     activeMenu: function() {
       dashboardStore.commit('activeMenu')
@@ -107,6 +130,43 @@ $sidebar-menu-item-height: 40px;
 $search-bar-height:40px;
 $color-search-font:#B9BEC9;
 $color-nav-style: rgb(7,8,9);
+$li-height:35px;
+$sharp-width:20px;
+
+@mixin sharp-style{
+  width:0px;  
+  height:0px;  
+  border-left:$sharp-width /2 solid $color-nav-style;  
+  border-right:$sharp-width /2 solid $color-nav-style;  
+  border-bottom:$sharp-width /2 solid $color-f;
+}
+
+@mixin dropdown-list-ul-style{
+  list-style: none;
+  font-size: 14px;
+  box-shadow: 0px 0px 2px rgba($color-nav-style, 0.3);
+}
+
+@mixin dropdown-list-li-style{
+  height: $li-height;
+  line-height:  $li-height;
+  width: 100%;
+  color: $color-nav-style;
+  background-color: $color-f;
+  box-shadow: 1px 0px 3px rgba($color-nav-style, 0.3);
+  cursor: pointer;
+}
+
+@mixin dropdown-list-li-state{
+  &:hover{
+    background-color: $color-grass;
+    color: $color-f;
+    }
+
+  &:active{
+    background-color: darken($color-grass,10%);
+    }
+}
 
 *{
   padding: 0px;
@@ -200,103 +260,103 @@ header#header {
         position: fixed;
         top: 61px;
         right: 60px;
+        display: none;
+        animation: show .5s;
+
+        &.active{
+          display: block;
+        }
 
       &>ul.message-list{
-        width: 150px;
-        list-style: none;
-        font-size: 14px;
-
-        &:hover{
-          &>li.message-list-item:first-child{
-              border-bottom:10px solid $color-grass;
-          }
-        }
+        width: $header-height * 2.5;
+        @include dropdown-list-ul-style;
 
         &>li.message-list-item{
-          height: 35px;
-          line-height: 35px;
-          width: 100%;
-          text-align: center;
-          color: $color-nav-style;
-          background-color: $color-f;
-          cursor: pointer;
+          @include dropdown-list-li-style;
+          @include dropdown-list-li-state;
+
+          &>span.message-name{
+            display: inline-block;
+            height: $li-height;
+            line-height: $li-height;
+            margin-left: 15px;
+          }
+
+          &>span.message-number{
+            display: inline-block;
+            height: $li-height;
+            line-height: $li-height;
+            font-size: 10px;
+            margin-left: 10px;
+            color: $color-fire;
+          }
+
+          &>span.message-tip{
+            display: inline-block;
+            height: 10px;
+            width: 10px;
+            background-color: $color-fire;
+            border-radius: 10px;
+            margin-left: 10px;
+          }
 
            &:first-child{
-            width:0px;  
-            height:0px;  
-            border-left:10px solid $color-nav-style;  
-            border-right:10px solid $color-nav-style;  
-            border-bottom:10px solid $color-f;
-            margin-left: 110px;
+             @include sharp-style;
+             margin-left: ($header-height - $sharp-width)/2 + $header-height * 1.5;
           }
 
-          &:hover{
-            background-color: $color-grass;
-            color: $color-f;
+          &:nth-child(2){
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
           }
-
-          &:active{
-            background-color: darken($color-grass,10%);
+          &:nth-child(3){
+            &>span.message-number{
+              color: $color-grass;
+            }
           }
-
+          &:last-child{
+            border-bottom-left-radius: 3px;
+            border-bottom-right-radius:3px;
+          }
         }
       }
-     
     }
 
     &>div.config-list-container{
       position: fixed;
       top: 61px;
       right: 0px;
-      visibility: hidden;
+      animation: show .5s;
+      display: none;
 
       &.active{
-        visibility: visible;
+        display: block;
       }
 
       &>ul.config-list{
-        list-style: none;
-        font-size: 14px;
-        width: 120px;
-
-        &:hover{
-          &>li.config-list-item:first-child{
-               border-bottom:10px solid $color-grass;
-          }
-        }
+        width: $header-height * 2;
+        @include dropdown-list-ul-style;
 
         &>li.config-list-item{
-          height: 35px;
-          line-height: 35px;
-          width: 100%;
+          @include dropdown-list-li-style;
+          @include dropdown-list-li-state;
           text-align: center;
-          color: $color-nav-style;
-          background-color: $color-f;
-          cursor: pointer;
 
           &:first-child{
-            width:0px;  
-            height:0px;  
-            border-left:10px solid $color-nav-style;  
-            border-right:10px solid $color-nav-style;  
-            border-bottom:10px solid $color-f;
+            @include sharp-style;
             margin-left: 80px;
           }
-
-          &:hover{
-            background-color: $color-grass;
-            color: $color-f;
+          &:nth-child(2){
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
           }
-
-          &:active{
-            background-color: darken($color-grass,10%);
+          &:last-child{
+            border-bottom-left-radius: 3px;
+            border-bottom-right-radius:3px;
           }
         }
       }
-
     }
-    
-
   }
  
   &>div#search{
@@ -451,6 +511,30 @@ div#content {
   left: 0;
   right: 0;
   bottom: 0;
+}
+@keyframes show{
+  0% {top: 61px;}
+  50% {top: 71px;}
+  100% {top: 61px;}
+}
+
+@-moz-keyframes show 
+{
+  0% {top: 61px;}
+  50% {top: 71px;}
+  100% {top: 61px;}
+}
+
+@-webkit-keyframes show {
+  0% {top: 61px;}
+  50% {top: 71px;}
+  100% {top: 61px;}
+}
+
+@-o-keyframes show {
+  0% {top: 61px;}
+  50% {top: 71px;}
+  100% {top: 61px;}
 }
 
 </style>
