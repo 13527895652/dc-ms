@@ -15,7 +15,7 @@ const state = {
     {
       id: 'msgItem2',
       msgContent: '装的什么信息yyy',
-      time: '1/31 17:30'
+      time: '1/31 17:20'
     },
     {
       id: 'msgItem3',

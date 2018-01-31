@@ -80,7 +80,7 @@ export default {
           console.log('token_value: ' + sessionStorage.getItem('token'))
           // sessionStorage.removeItem('token')
           authStore.commit('logout')
-          router.push('/superfuck')
+          router.push('/supersuperfuck')
           break
       }
     },
