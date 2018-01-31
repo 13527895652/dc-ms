@@ -6,6 +6,33 @@ Vue.use(Vuex)
 const state = {
   isConfigActive: false,
   isMessageActive: false,
+  msgLists: [
+    {
+      id: 'msgItem1',
+      msgContent: '不知道这里装的什么信息xxx',
+      time: '1/18 15:30'
+    },
+    {
+      id: 'msgItem2',
+      msgContent: '装的什么信息yyy',
+      time: '1/31 17:30'
+    },
+    {
+      id: 'msgItem3',
+      msgContent: '什么信息zzz',
+      time: '1/32 25:30'
+    }
+  ],
+  configLists: [
+    {
+      id: 'user_info',
+      configName: '个人信息'
+    },
+    {
+      id: 'logout',
+      configName: '退出登录'
+    }
+  ],
   isMenuActive: false,
   activeMenuTabId: 'menu1',
   activeMenuItemId: 'menu11',

@@ -13,16 +13,10 @@
         <div class="message-list-container" :class="[{active:isMessageActive()}]">
           <ul class="message-list">
             <li class="message-list-item"></li>
-            <li class="message-list-item">
-              <span class="message-name">未读消息</span>
-              <span class="message-number">2,234</span>
-              <span class="message-tip"></span>
+            <li class="message-list-item" v-for="msgList of msgLists" :key="msgList.id" @click="message(msgList)">
+               <span class="message-content">{{msgList.msgContent}}</span>
+               <span class="message-time">{{msgList.time}}</span>
             </li>
-            <li class="message-list-item">
-              <span class="message-name">已读消息</span>
-              <span class="message-number">1,234</span>
-            </li>
-            <li class="message-list-item">444444444K</li>
           </ul>
         </div>
         <div id="config" class="nav" @click="activeConfig">
@@ -31,12 +25,12 @@
         <div class="config-list-container" :class="[{active:isConfigActive()}]">
           <ul class="config-list">
             <li class="config-list-item"></li>
-            <li class="config-list-item">个人信息</li>
-            <li class="config-list-item" @click="logout">退出登录</li>
+            <li class="config-list-item" v-for="configList of configLists" :key="configList.id" @click="config(configList)">
+              <span class="config-name">{{configList.configName}}</span>
+            </li>
           </ul>
         </div>
       </nav>
-         
       <div id="search">
         <img class="search" src="/static/icon/search_.png"/>
         <input type="text" placeholder="搜索">
@@ -63,37 +57,67 @@
 <script>
 import dashboardStore from '@/store/dashboard/dashboard'
 import hCard from '@/components/hCard'
+import router from '../../router'
+import authStore from '@/store/auth/auth'
 
 export default {
   name: 'dashboard',
   data: function() {
     return {
-      menus: dashboardStore.state.menus
+      menus: dashboardStore.state.menus,
+      msgLists: dashboardStore.state.msgLists,
+      configLists: dashboardStore.state.configLists
     }
   },
   methods: {
-    // recover: function () {
-    //   document.onclick=function () {
-    //     activeConfig();
-    //   }
-    // },
-    logout: function() {
-      console.log(sessionStorage.getItem('token'))
-      sessionStorage.clear()
-      window.location.reload()
+    config: function(configList) {
+      switch (configList.id) {
+        case 'user_info':
+          console.log(configList.configName)
+          break
+        case 'logout':
+          console.log(configList.configName)
+          console.log('token_value: ' + sessionStorage.getItem('token'))
+          // sessionStorage.removeItem('token')
+          authStore.commit('logout')
+          router.push('/superfuck')
+          break
+      }
     },
-    activeConfig: function() {
+    message: function(msgList) {
+      switch (msgList.id) {
+        case 'msgItem1':
+          console.log(msgList.msgContent)
+          break
+        case 'msgItem2':
+          console.log(msgList.msgContent)
+          break
+        case 'msgItem3':
+          console.log(msgList.msgContent)
+          break
+      }
+    },
+    activeConfig: function(event) {
+      event.stopPropagation()
       dashboardStore.commit('activeConfig')
+      if (dashboardStore.state.isMessageActive) {
+        dashboardStore.commit('activeMessage')
+      }
     },
     isConfigActive: function() {
       return dashboardStore.state.isConfigActive
     },
-    activeMessage: function() {
+    activeMessage: function(event) {
+      event.stopPropagation()
       dashboardStore.commit('activeMessage')
+      if (dashboardStore.state.isConfigActive) {
+        dashboardStore.commit('activeConfig')
+      }
     },
     isMessageActive: function() {
       return dashboardStore.state.isMessageActive
     },
+
     activeMenu: function() {
       dashboardStore.commit('activeMenu')
     },
@@ -116,6 +140,15 @@ export default {
   },
   components: {
     hCard
+  },
+  mounted() {
+    document.addEventListener('click', function() {
+      if (dashboardStore.state.isConfigActive) {
+        dashboardStore.commit('activeConfig')
+      } else if (dashboardStore.state.isMessageActive) {
+        dashboardStore.commit('activeMessage')
+      }
+    })
   }
 }
 </script>
@@ -143,13 +176,13 @@ $sharp-width:20px;
 
 @mixin dropdown-list-ul-style{
   list-style: none;
-  font-size: 14px;
+  font-size: 12px;
   box-shadow: 0px 0px 2px rgba($color-nav-style, 0.3);
 }
 
 @mixin dropdown-list-li-style{
   height: $li-height;
-  line-height:  $li-height;
+  line-height: $li-height;
   width: 100%;
   color: $color-nav-style;
   background-color: $color-f;
@@ -166,6 +199,18 @@ $sharp-width:20px;
   &:active{
     background-color: darken($color-grass,10%);
     }
+}
+
+@mixin dropdown-list-border-radius{
+  &:nth-child(2){
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+  }
+
+  &:last-child{
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius:3px;
+  }
 }
 
 *{
@@ -242,7 +287,6 @@ header#header {
         width: 32px;
         height: 32px;
       }
-
       &:hover{
         background-color: $color-grass;
 
@@ -250,73 +294,43 @@ header#header {
             filter: drop-shadow(white 100px 0);
         }
       }
-
       &:active{
         background-color: darken($color-grass,10%);
       }
     }
 
     &>div.message-list-container{
-        position: fixed;
-        top: 61px;
-        right: 60px;
-        display: none;
-        animation: show .5s;
+      position: fixed;
+      top: 61px;
+      right: $header-height;
+      display: none;
+      animation: show .5s;
 
-        &.active{
-          display: block;
-        }
+      &.active{
+        display: block;
+      }
 
       &>ul.message-list{
-        width: $header-height * 2.5;
+        width: $header-height * 6;
         @include dropdown-list-ul-style;
 
         &>li.message-list-item{
           @include dropdown-list-li-style;
           @include dropdown-list-li-state;
+          @include dropdown-list-border-radius;
 
-          &>span.message-name{
+          &>span.message-content{
             display: inline-block;
-            height: $li-height;
-            line-height: $li-height;
-            margin-left: 15px;
-          }
-
-          &>span.message-number{
-            display: inline-block;
-            height: $li-height;
-            line-height: $li-height;
-            font-size: 10px;
-            margin-left: 10px;
-            color: $color-fire;
-          }
-
-          &>span.message-tip{
-            display: inline-block;
-            height: 10px;
-            width: 10px;
-            background-color: $color-fire;
-            border-radius: 10px;
             margin-left: 10px;
           }
-
-           &:first-child{
-             @include sharp-style;
-             margin-left: ($header-height - $sharp-width)/2 + $header-height * 1.5;
+          &>span.message-time{
+            float: right;
+            margin-right: 5px;
           }
 
-          &:nth-child(2){
-            border-top-left-radius: 3px;
-            border-top-right-radius: 3px;
-          }
-          &:nth-child(3){
-            &>span.message-number{
-              color: $color-grass;
-            }
-          }
-          &:last-child{
-            border-bottom-left-radius: 3px;
-            border-bottom-right-radius:3px;
+          &:first-child{
+            @include sharp-style;
+            margin-left: ($header-height - $sharp-width)/2 + $header-height * 5;
           }
         }
       }
@@ -340,19 +354,12 @@ header#header {
         &>li.config-list-item{
           @include dropdown-list-li-style;
           @include dropdown-list-li-state;
+          @include dropdown-list-border-radius;
           text-align: center;
 
           &:first-child{
             @include sharp-style;
-            margin-left: 80px;
-          }
-          &:nth-child(2){
-            border-top-left-radius: 3px;
-            border-top-right-radius: 3px;
-          }
-          &:last-child{
-            border-bottom-left-radius: 3px;
-            border-bottom-right-radius:3px;
+            margin-left: ($header-height - $sharp-width)/2 + $header-height;
           }
         }
       }
