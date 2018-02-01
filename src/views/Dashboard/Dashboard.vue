@@ -7,7 +7,7 @@
         <div class="sub">Nansha Public Information Resources Service Platform</div>
       </div>
       <nav id="help">
-        <div id="message" class="nav" @click="activeMessage">
+        <div id="message" class="nav" @click.stop="activeMessage">
           <img src="/static/icon/tones.png">
         </div>
         <div class="message-list-container" :class="[{active:isMessageActive()}]">
@@ -19,7 +19,7 @@
             </li>
           </ul>
         </div>
-        <div id="config" class="nav" @click="activeConfig">
+        <div id="config" class="nav" @click.stop="activeConfig">
           <img src="/static/icon/user.png">
         </div>
         <div class="config-list-container" :class="[{active:isConfigActive()}]">
@@ -80,7 +80,7 @@ export default {
           console.log('token_value: ' + sessionStorage.getItem('token'))
           // sessionStorage.removeItem('token')
           authStore.commit('logout')
-          router.push('/supersuperfuck')
+          router.push('/supersuperfuckfuckfuck')
           break
       }
     },
@@ -98,7 +98,6 @@ export default {
       }
     },
     activeConfig: function(event) {
-      event.stopPropagation()
       dashboardStore.commit('activeConfig')
       if (dashboardStore.state.isMessageActive) {
         dashboardStore.commit('activeMessage')
@@ -108,7 +107,6 @@ export default {
       return dashboardStore.state.isConfigActive
     },
     activeMessage: function(event) {
-      event.stopPropagation()
       dashboardStore.commit('activeMessage')
       if (dashboardStore.state.isConfigActive) {
         dashboardStore.commit('activeConfig')
@@ -369,15 +367,18 @@ header#header {
   &>div#search{
     float: right;
     width: 180px;
-    height: $search-bar-height;
+    padding: 2px;
+    height: $search-bar-height - 2px;
     margin-top: ($header-height - $search-bar-height) / 2;
     margin-right: 10px;
-    box-shadow:0px 0px 999px $color-nav-style inset;
+    background: $color-nav-style;
+    box-shadow:0px 0px 99px $color-nav-style inset;
     transition: all 500ms ease;
 
     &:hover{
       width: 300px;
       border-bottom: 1px solid $color-grass;
+      box-shadow:0px 0px 9px $color-grass;
 
       &>input{
          width: 260px;
@@ -393,8 +394,8 @@ header#header {
       outline: none;
       color:$color-search-font;
       font-size: 16px;
+      box-shadow:0px 0px 999px $color-nav-style inset;
       border: 0px solid $color-nav-style;
-      background: $color-nav-style;
       transition: all 500ms ease;
     }
 
